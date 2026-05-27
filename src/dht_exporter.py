@@ -19,28 +19,31 @@ read_success_gauge = Gauge(
     "dht11_read_success", # DHT11の読み取り成功のメトリクス名
     "Whether the last DHT11 read was successful: 1 success, 0 failure" # メトリクスの説明
 )
+def main():
+    try:
+        start_http_server(2080)
 
-try:
-    start_http_server(2080)
+        while True:
+            try:
+                temp = dht.temperature
+                hum = dht.humidity
 
-    while True:
-        try:
-            temp = dht.temperature
-            hum = dht.humidity
+                if temp is not None and hum is not None:
+                    temp_gauge.set(temp)
+                    hum_gauge.set(hum)
+                    read_success_gauge.set(1) # 読み取り成功
 
-            if temp is not None and hum is not None:
-                temp_gauge.set(temp)
-                hum_gauge.set(hum)
-                read_success_gauge.set(1) # 読み取り成功
+                    # テスト
+                    print(f"Temperature: {temp}°C, Humidity: {hum}%")
 
-                # テスト
-                print(f"Temperature: {temp}°C, Humidity: {hum}%")
+                    time.sleep(30)
+            
+            except RuntimeError as e:
+                read_success_gauge.set(0) # 読み取り失敗
+                print(f"Reading error: {e}")
+                time.sleep(2)
+    finally:
+        dht.exit()
 
-                time.sleep(30)
-        
-        except RuntimeError as e:
-            read_success_gauge.set(0) # 読み取り失敗
-            print(f"Reading error: {e}")
-            time.sleep(2)
-finally:
-    dht.exit()
+if __name__ == "__main__":
+    main()
