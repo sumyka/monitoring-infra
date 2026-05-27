@@ -22,6 +22,17 @@ services:
         volumes:
             - grafana_data:/var/lib/grafana
         restart: unless-stopped
+    
+    node-exporter:
+        image: prom/node-exporter
+        container_name: raspberrypi-node-exporter
+        ports:
+            - "9100:9100"
+        command:
+            - "--path.rootfs=/host"
+        volumes:
+            - "/:/host:ro,rslave"
+        restart: unless-stopped
 
 volumes:
     prometheus_data:
