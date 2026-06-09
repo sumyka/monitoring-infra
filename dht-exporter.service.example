@@ -1,0 +1,9 @@
+[Service]
+Type=simple
+User=YOUR_USERNAME
+
+WorkingDirectory=/home/YOUR_USERNAME/monitoring-infra
+ExecStart=/home/YOUR_USERNAME/monitoring-infra/start-dht-exporter.sh
+
+Restart=always
+RestartSec=5
